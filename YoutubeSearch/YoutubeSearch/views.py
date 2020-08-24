@@ -3,22 +3,26 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 from rest_framework import status
 from .models import Video
 import requests
 from .serializer import VideoSerializer
 import time
+from collections import OrderedDict 
 
 ##################CONSTANTS#################################
 API_KEYS=['AIzaSyAHaOX_L8nmKQ2OyIf-mnG9zBuQfWnLJpU','AIzaSyAHaOX_L8nmKQ2OyIf-mnG9zBuQfWnLJpU']
 CURR_KEY=0
 SEARCH='football'
+FETCH_FREQ=10 #in seconds
 ############################################################
 
 #Works in a separte thread so works asyncrounsly
 def updateDB():
+	global FETCH_FREQ
 	async_fetch()
-	time.sleep(10)
+	time.sleep(FETCH_FREQ)
 
 #Fetches from the Youtube API & Updates in the local database
 def async_fetch():
@@ -39,9 +43,13 @@ def async_fetch():
 		print("Error in fetch")
 		
 
+
 #GET API for the video Database
-class VideoList(APIView):
+class VideoList(APIView,PageNumberPagination):
 	def get(self,request):
-		videos = Video.objects.all()
-		serializer = VideoSerializer(videos,many=True)
-		return Response(serializer.data)
+		page = int(self.request.GET.get('page', 1))
+		page_size = int(self.request.GET.get('page_size', 10))
+		videos = Video.objects.all()[(page-1)*page_size:page*page_size]
+		serializerData = VideoSerializer(videos,many=True)
+
+		return Response(serializerData.data)
