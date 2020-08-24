@@ -1,6 +1,14 @@
+
+import django
+django.setup()
 from .views import async_fetch
-import schedule
+import time
+import multiprocessing 
 
-schedule.every(1).minutes.do(async_fetch)
+def updateDB():
+	time.sleep(10)
+async_fetch()
 
-
+# asyncUpdate= multiprocessing.Process(target=updateDB)
+# asyncUpdate.start()
+# asyncUpdate.join()
