@@ -41,8 +41,6 @@ def async_fetch():
 	except:
 		CURR_KEY=(CURR_KEY+1)%len(API_KEYS)
 		print("Error in fetch")
-		
-
 
 #GET API for the video Database
 class VideoList(APIView,PageNumberPagination):
