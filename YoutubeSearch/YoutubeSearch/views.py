@@ -7,21 +7,29 @@ from rest_framework import status
 from .models import Video
 import requests
 from .serializer import VideoSerializer
+import time
+import threading
+
+def updateDB():
+	print('goofd')
+	async_fetch()
+	time.sleep(10)
+
 
 def async_fetch():
 	API_KEY='AIzaSyAHaOX_L8nmKQ2OyIf-mnG9zBuQfWnLJpU'
 	SEARCH='cricket+football'
 	URL = 'https://www.googleapis.com/youtube/v3/search?key='+API_KEY+'&type=video&order=date&part=snippet&q='+SEARCH
 	response = requests.get(URL).json()
-
-	for video in response.items:
+	for video in response['items']:
 		try:
 			Video.objects.get_or_create(
-				title = video.snippet.title,
-				description = video.snippet.description,
-				publishDate = video.snippet.publishedAt,
-				thumbnailURL = video.snippet.thumbnails.default.url,
-				videoURL="https://www.youtube.com/watch?v="+video.id.videoId)
+				title = video['snippet']['title'],
+				description = video['snippet']['description'],
+				publishDate = video['snippet']['publishedAt'],
+				thumbnailURL = video['snippet']['thumbnails']['high']['url'],
+				videoURL="https://www.youtube.com/watch?v="+video['id']['videoId'])
+			print('done')
 		except:
 			print("Error in fetch")
 			break
