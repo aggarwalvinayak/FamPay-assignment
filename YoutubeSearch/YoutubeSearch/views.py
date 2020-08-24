@@ -4,8 +4,9 @@ from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Videos
+from .models import Video
 import requests
+from .serializer import VideoSerializer
 
 def async_fetch():
 	API_KEY='AIzaSyAHaOX_L8nmKQ2OyIf-mnG9zBuQfWnLJpU'
@@ -15,7 +16,7 @@ def async_fetch():
 
 	for video in response.items:
 		try:
-			Videos.objects.get_or_create(
+			Video.objects.get_or_create(
 				title = video.snippet.title,
 				description = video.snippet.description,
 				publishDate = video.snippet.publishedAt,
@@ -25,4 +26,8 @@ def async_fetch():
 			print("Error in fetch")
 			break
 
-
+class VideoList(APIView):
+	def get(self,request):
+		videos = Video.objects.all()
+		serializer = VideoSerializer(videos,many=True)
+		return Response(serializer.data)

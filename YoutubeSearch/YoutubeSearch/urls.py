@@ -15,7 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from .views import VideoList
+
+app_name= 'YoutubeSearch'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+	path('videos/',  VideoList.as_view()),
+
 ]
