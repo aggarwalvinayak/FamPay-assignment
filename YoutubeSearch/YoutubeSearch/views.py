@@ -8,32 +8,38 @@ from .models import Video
 import requests
 from .serializer import VideoSerializer
 import time
-import threading
 
+##################CONSTANTS#################################
+API_KEYS=['AIzaSyAHaOX_L8nmKQ2OyIf-mnG9zBuQfWnLJpU','AIzaSyAHaOX_L8nmKQ2OyIf-mnG9zBuQfWnLJpU']
+CURR_KEY=0
+SEARCH='football'
+############################################################
+
+#Works in a separte thread so works asyncrounsly
 def updateDB():
-	print('goofd')
 	async_fetch()
 	time.sleep(10)
 
-
+#Fetches from the Youtube API & Updates in the local database
 def async_fetch():
-	API_KEY='AIzaSyAHaOX_L8nmKQ2OyIf-mnG9zBuQfWnLJpU'
-	SEARCH='cricket+football'
-	URL = 'https://www.googleapis.com/youtube/v3/search?key='+API_KEY+'&type=video&order=date&part=snippet&q='+SEARCH
+	global	API_KEYS,SEARCH,CURR_KEY
+	URL = 'https://www.googleapis.com/youtube/v3/search?key='+API_KEYS[CURR_KEY]+'&type=video&order=date&part=snippet&maxResults=20&q='+SEARCH
 	response = requests.get(URL).json()
-	for video in response['items']:
-		try:
+
+	try:
+		for video in response['items']:
 			Video.objects.get_or_create(
 				title = video['snippet']['title'],
 				description = video['snippet']['description'],
 				publishDate = video['snippet']['publishedAt'],
 				thumbnailURL = video['snippet']['thumbnails']['high']['url'],
 				videoURL="https://www.youtube.com/watch?v="+video['id']['videoId'])
-			print('done')
-		except:
-			print("Error in fetch")
-			break
+	except:
+		CURR_KEY=(CURR_KEY+1)%len(API_KEYS)
+		print("Error in fetch")
+		
 
+#GET API for the video Database
 class VideoList(APIView):
 	def get(self,request):
 		videos = Video.objects.all()
