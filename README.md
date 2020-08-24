@@ -19,7 +19,7 @@ PARAMETERS(optional):
 
 2. `127.0.0.1:8000/admin` contains the admin panel. Username: *admin* Password: *pass1234*
 
-Go to YoutubeSearch->Videos for the Dashboard (Also contains filters for sorting/slicing etc.)
+   Go to YoutubeSearch->Videos for the Dashboard (Also contains filters for sorting/slicing etc.)
 
 Also Supports multi API Key use. Check CONSTANTS in views.py
 
