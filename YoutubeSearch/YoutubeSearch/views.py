@@ -10,6 +10,7 @@ import requests
 from .serializer import VideoSerializer
 import time
 from collections import OrderedDict 
+import datetime
 
 ##################CONSTANTS#################################
 API_KEYS=['AIzaSyAHaOX_L8nmKQ2OyIf-mnG9zBuQfWnLJpU','AIzaSyDOxwBOjFjBGSkyIFrXEti5vO6TB34KOOI']
@@ -28,7 +29,8 @@ def updateDB():
 #Fetches from the Youtube API & Updates in the local database
 def async_fetch():
 	global	API_KEYS,SEARCH,CURR_KEY
-	URL = 'https://www.googleapis.com/youtube/v3/search?key='+API_KEYS[CURR_KEY]+'&type=video&order=date&part=snippet&maxResults=20&q='+SEARCH
+	date= datetime.date.today()-datetime.timedelta(days=1)
+	URL = 'https://www.googleapis.com/youtube/v3/search?key='+API_KEYS[CURR_KEY]+'&type=video&order=date&part=snippet&maxResults=20&q='+SEARCH+'&publishedAfter='+str(date)+'T00:00:01Z'
 	response = requests.get(URL).json()
 	try:
 		for video in response['items']:
