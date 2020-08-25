@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.db import models
 
+#The Database schema for the Fetched Videos
 class Video(models.Model):
 	title = models.CharField(max_length=100)
 	description = models.CharField(max_length=1000)

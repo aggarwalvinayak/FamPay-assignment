@@ -12,7 +12,7 @@ import time
 from collections import OrderedDict 
 
 ##################CONSTANTS#################################
-API_KEYS=['AIzaSyAHaOX_L8nmKQ2OyIf-mnG9zBuQfWnLJpU','AIzaSyAHaOX_L8nmKQ2OyIf-mnG9zBuQfWnLJpU']
+API_KEYS=['AIzaSyAHaOX_L8nmKQ2OyIf-mnG9zBuQfWnLJpU','AIzaSyDOxwBOjFjBGSkyIFrXEti5vO6TB34KOOI']
 CURR_KEY=0
 SEARCH='football'
 FETCH_FREQ=10 #in seconds
@@ -21,15 +21,15 @@ FETCH_FREQ=10 #in seconds
 #Works in a separte thread so works asyncrounsly
 def updateDB():
 	global FETCH_FREQ
-	async_fetch()
-	time.sleep(FETCH_FREQ)
+	while(True):
+		async_fetch()
+		time.sleep(FETCH_FREQ)
 
 #Fetches from the Youtube API & Updates in the local database
 def async_fetch():
 	global	API_KEYS,SEARCH,CURR_KEY
 	URL = 'https://www.googleapis.com/youtube/v3/search?key='+API_KEYS[CURR_KEY]+'&type=video&order=date&part=snippet&maxResults=20&q='+SEARCH
 	response = requests.get(URL).json()
-
 	try:
 		for video in response['items']:
 			Video.objects.get_or_create(
@@ -40,7 +40,7 @@ def async_fetch():
 				videoURL="https://www.youtube.com/watch?v="+video['id']['videoId'])
 	except:
 		CURR_KEY=(CURR_KEY+1)%len(API_KEYS)
-		print("Error in fetch")
+		print("ERROR IN FETCH ",response)
 
 #GET API for the video Database
 class VideoList(APIView,PageNumberPagination):

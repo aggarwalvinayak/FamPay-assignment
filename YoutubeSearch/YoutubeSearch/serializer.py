@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Video
 
+#Creating json objects from the Database while returning response
 class VideoSerializer(serializers.ModelSerializer):
 
 	title = serializers.CharField()
